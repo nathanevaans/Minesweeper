@@ -5,11 +5,6 @@ let GRID_SIZE = 30
 let BOMB_COUNT = Math.round(GRID_SIZE * 3)
 let CELL_SIZE = 24
 
-let statsPara = document.getElementById('stats')
-let currentClearancePercentage
-let averageClearancePercentage = 0
-let gameCount = 1
-
 let revealedCount // number, count of how many tiles the player has revealed
 let hasWon // boolean, flag if the player has won
 let bombs // Array<String>, array of keys of all the bombs
@@ -65,11 +60,6 @@ const calculateDangers = () => {
 }
 
 const reRenderButtons = () => {
-    currentClearancePercentage = (100 * revealedCount) / ((GRID_SIZE * GRID_SIZE) - BOMB_COUNT)
-    const currentClearanceRounded = (Math.round(currentClearancePercentage * 100) / 100).toFixed(2)
-    const averageClearanceRounded = (Math.round(averageClearancePercentage * 100) / 100).toFixed(2)
-    statsPara.textContent = `current clearance: ${currentClearanceRounded} | average clearance: ${averageClearanceRounded} | game number: ${gameCount}`
-
     while (renderQueue.length > 0) {
         const key = renderQueue.pop()
         const [buttonX, buttonY] = fromKey(key)
@@ -163,7 +153,7 @@ const initRenderButtons = () => {
                 renderQueue.push(toKey(j, i))
                 reRenderButtons()
             }
-            button.onclick = e => {
+            button.onclick = () => {
                 if (cells[i][j].flagged) return
                 revealCell(j, i)
                 reRenderButtons()
@@ -174,12 +164,6 @@ const initRenderButtons = () => {
         }
     }
     restartButton.onclick = () => {
-        gameCount++
-        averageClearancePercentage = ((averageClearancePercentage * (gameCount - 2)) + currentClearancePercentage) / (gameCount - 1)
-        const averageClearanceRounded = (Math.round(averageClearancePercentage * 100) / 100).toFixed(2);
-        statsPara.textContent = `current clearance: 0 | average clearance: ${averageClearanceRounded} | game number: ${gameCount}`
-        currentClearancePercentage = 0
-
         canvas.textContent = ''
         canvas.style.pointerEvents = ''
         restartButton.style.display = ''
